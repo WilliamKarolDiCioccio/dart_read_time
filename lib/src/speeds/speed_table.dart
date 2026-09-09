@@ -601,16 +601,19 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
         'East Slavic beside Russian — the same case load and the same script.',
   ),
   'vi': ReadingSpeed(
-    slowWpm: 260,
-    mediumWpm: 350,
-    fastWpm: 440,
+    slowWpm: 215,
+    mediumWpm: 290,
+    fastWpm: 370,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'es',
     note:
         '**Spaced by syllable rather than by word.** A whitespace split '
-        'returns roughly twice the tokens another language would for the same '
-        'meaning, so the rate is raised to match and the duration comes out '
-        'right. The word count does not compare to any other entry here.',
+        'returns about a third more tokens than another language would for the '
+        'same meaning, so the rate is raised by roughly that much and the '
+        'duration comes out right. The token count does not compare to any '
+        'other entry here. The least certain figure in the table: the ratio '
+        'varies with how many function words the other language spends, and a '
+        'parallel passage can come out anywhere from evens to half again.',
   ),
   'zh': ReadingSpeed(
     slowWpm: 120,

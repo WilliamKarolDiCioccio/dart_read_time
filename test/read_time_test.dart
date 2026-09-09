@@ -300,6 +300,83 @@ void main() {
     });
   });
 
+  group('the same passage in several languages', () {
+    /// One paragraph, translated. Not a style exercise — the point is that
+    /// each of these says the same thing, so each *should* take about as long
+    /// to read whatever the word counts do.
+    const parallel = <String, String>{
+      'en':
+          'You arrive at the gate. It is shut, and the iron is cold under '
+          'your hand. Somewhere behind it a dog begins to bark, and then '
+          'stops.',
+      'de':
+          'Du erreichst das Tor. Es ist verschlossen, und das Eisen ist kalt '
+          'unter deiner Hand. Irgendwo dahinter beginnt ein Hund zu bellen.',
+      'fi':
+          'Saavut portille. Se on suljettu, ja rauta on kylmää kätesi alla. '
+          'Jossain sen takana koira alkaa haukkua, ja vaikenee sitten.',
+      'ja':
+          '門にたどり着いた。閉ざされていて、鉄は手の下で冷たい。'
+          'その向こうのどこかで犬が吠えはじめ、そして止んだ。',
+      'zh':
+          '你走到门前。门是关着的，铁在你手下冰凉。'
+          '门后某处有狗开始吠叫，然后停了下来。',
+      'ko':
+          '당신은 문 앞에 도착한다. 문은 닫혀 있고, 쇠는 손 아래에서 차갑다. '
+          '그 너머 어딘가에서 개가 짖기 시작하다가 멈춘다.',
+      'vi':
+          'Bạn đến trước cổng. Cổng đã đóng, và sắt lạnh dưới bàn tay bạn. '
+          'Đâu đó phía sau, một con chó bắt đầu sủa, rồi im bặt.',
+      'ar':
+          'تصل إلى البوابة. إنها مغلقة، والحديد بارد تحت يدك. '
+          'في مكان ما خلفها يبدأ كلب في النباح، ثم يتوقف.',
+    };
+
+    test('takes about the same time to read in each of them', () {
+      final english = read(parallel['en']!, language: 'en');
+
+      for (final entry in parallel.entries) {
+        final estimate = read(entry.value, language: entry.key);
+        final ratio =
+            estimate.duration.inMilliseconds / english.duration.inMilliseconds;
+        expect(
+          ratio,
+          inInclusiveRange(0.65, 1.35),
+          reason:
+              '${entry.key} came out at ${estimate.duration.inMilliseconds}ms '
+              'against English at ${english.duration.inMilliseconds}ms. The '
+              'whole table rests on the claim that a lower words-per-minute '
+              'is a denser word rather than a slower reader, so the same '
+              'meaning has to cost about the same time. A figure that drifts '
+              'out of this band is wrong, not interesting.',
+        );
+      }
+    });
+
+    test('the word counts do not agree, which is the point', () {
+      final german = read(parallel['de']!, language: 'de');
+      final english = read(parallel['en']!, language: 'en');
+      expect(
+        german.words,
+        lessThan(english.words),
+        reason:
+            'German compounds, so it says the same thing in fewer words — and '
+            'still takes about as long, which is what the lower German '
+            'words-per-minute is for.',
+      );
+    });
+
+    test('the two counted by character have no words at all', () {
+      expect(read(parallel['ja']!, language: 'ja').words, 0);
+      expect(read(parallel['zh']!, language: 'zh').words, 0);
+      expect(
+        read(parallel['ko']!, language: 'ko').characters,
+        0,
+        reason: 'Korean sits with the word-counted languages, not with those.',
+      );
+    });
+  });
+
   test('the estimate carries its own provenance', () {
     final estimate = estimateReadTime(
       words(10),
