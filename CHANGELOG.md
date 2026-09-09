@@ -14,6 +14,19 @@ counts it was arrived at from, and the `ReadingSpeed` it was priced with.
 content multiplier. The multiplier scales the *speed*, so `ContentKind.technical`
 (0.8) makes the estimate longer rather than shorter.
 
+### Text in more than one language
+
+`estimateSpannedReadTime` takes `LanguageSpan`s — ranges the caller says are in
+a given language — and prices each in its own. `estimateSpannedMarkdownReadTime`
+is the same with offsets into the Markdown source. **Nothing here detects a
+language**: whoever knows hands the ranges over, so the package stays pure Dart,
+stays synchronous, and does not make one detector normative.
+
+Spans change the *rate* and never the *unit* — the script still decides whether
+a stretch is counted in words or characters — so a span naming the wrong
+language costs a rate rather than an order of magnitude. `ReadTime.byLanguage`,
+`dominantLanguage` and `isMultilingual` say what the answer drew on.
+
 ### Counting by script rather than by tag
 
 `countText` walks the runes and splits the text into runs by script: spaced

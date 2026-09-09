@@ -76,12 +76,14 @@ final class ReadTime {
     required this.duration,
     required this.counts,
     required this.speed,
+    this.byLanguage = const <String, Duration>{},
   });
 
   /// Nothing to read, which is what empty text comes to.
   ReadTime.empty(this.speed)
     : duration = Duration.zero,
-      counts = const TextCounts.empty();
+      counts = const TextCounts.empty(),
+      byLanguage = const <String, Duration>{};
 
   /// How long it takes.
   final Duration duration;
@@ -89,10 +91,42 @@ final class ReadTime {
   /// What was found in the text, in both units.
   final TextCounts counts;
 
-  /// The entry the estimate was priced with — including its
+  /// The entry the **document's** language resolved to — including its
   /// [ReadingSpeed.evidence], which is how a caller tells a measurement from a
   /// default.
+  ///
+  /// With spans, stretches of the text may have been priced by other entries
+  /// than this one; [byLanguage] is what says so.
   final ReadingSpeed speed;
+
+  /// How much of [duration] each **named** language accounted for, keyed by
+  /// the tag as the caller wrote it.
+  ///
+  /// Text covered by no span and by no [ReadTimeOptions.language] is absent
+  /// rather than filed under a placeholder: it was priced by the global
+  /// default, and the global default is not a language. So the values sum to
+  /// [duration] only when something named covered all of it.
+  final Map<String, Duration> byLanguage;
+
+  /// The language that accounts for most of the reading, or null when none was
+  /// named.
+  ///
+  /// What a caller wants in order to say "mostly English" without deciding for
+  /// itself what "mostly" means.
+  String? get dominantLanguage {
+    String? best;
+    var longest = Duration.zero;
+    for (final entry in byLanguage.entries) {
+      if (entry.value > longest) {
+        longest = entry.value;
+        best = entry.key;
+      }
+    }
+    return best;
+  }
+
+  /// Whether more than one language was named for this text.
+  bool get isMultilingual => byLanguage.length > 1;
 
   /// Words found in the spaced runs.
   int get words => counts.words;
@@ -122,10 +156,182 @@ final class ReadTime {
       'characters: $characters, ${speed.evidence.name})';
 }
 
+/// A stretch of text known to be in one language.
+///
+/// **This package detects nothing**, and that is the design rather than a gap.
+/// Whoever knows what language a passage is in — a detector, a `lang=`
+/// attribute, an author who said so — hands the ranges over, and this prices
+/// them. Baking one detector in would have made it normative, tied this to
+/// that detector's platform and dependencies, and put an initialisation step
+/// in front of a synchronous function.
+///
+/// [start] is inclusive and [end] exclusive, both in **code units** — the
+/// indices `String.substring` takes, and the ones a scanner naturally produces.
+@immutable
+final class LanguageSpan {
+  const LanguageSpan({
+    required this.start,
+    required this.end,
+    required this.language,
+  });
+
+  final int start;
+  final int end;
+
+  /// Any BCP 47-ish tag, read the same way [ReadTimeOptions.language] is.
+  final String language;
+
+  /// How many code units this covers.
+  int get length => end - start;
+
+  @override
+  String toString() => 'LanguageSpan($start..$end, $language)';
+}
+
+/// How long [text] takes to read when different stretches of it are in
+/// different languages.
+///
+/// **Spans change the rate, never the unit.** What is counted in words and
+/// what is counted in characters is decided by the script the runes are
+/// actually written in, exactly as it is without spans — so a span that names
+/// the wrong language costs a rate rather than an order of magnitude. That
+/// containment is deliberate: the detectors a caller is likely to reach for
+/// are documented to confuse Chinese with Korean, which is precisely the pair
+/// this package is otherwise most careful about, and a wrong answer there
+/// would be a rounding error rather than a threefold one.
+///
+/// The spans need not be sorted, need not touch, and need not cover
+/// everything. What they do:
+///
+/// - **A gap** is priced by [ReadTimeOptions.language], like any other text.
+/// - **An overlap** is resolved in favour of whichever span starts earlier;
+///   the later one is trimmed. Nothing is ever counted twice.
+/// - **Out of range** is clamped, and anything left empty is dropped. A
+///   detector that hands over a stale offset should not throw underneath a
+///   caller who cannot do anything about it.
+///
+/// The one thing worth aligning: a boundary that falls **inside a word** cuts
+/// it, and the two halves are counted as two words. That is inherent to
+/// cutting a string at an offset rather than a fault to work around — a caller
+/// segmenting by sentence or paragraph never lands there, and one that does
+/// has said the halves are in different languages.
+ReadTime estimateSpannedReadTime(
+  String text,
+  List<LanguageSpan> spans, {
+  ReadTimeOptions options = const ReadTimeOptions(),
+}) {
+  final base = ReadingSpeeds.of(options.language);
+  if (text.isEmpty) return ReadTime.empty(base);
+  if (spans.isEmpty) return estimateReadTime(text, options: options);
+
+  final ordered = _tidy(spans, text.length);
+
+  var words = 0;
+  final characters = <CountingScript, int>{};
+  var total = Duration.zero;
+  final byLanguage = <String, Duration>{};
+
+  void take(int start, int end, String? language) {
+    if (end <= start) return;
+    final counts = countText(text.substring(start, end));
+    if (counts.isEmpty) return;
+
+    final speed = ReadingSpeeds.of(language);
+    final slice = _durationOf(counts, speed, options);
+
+    words += counts.words;
+    for (final entry in counts.characters.entries) {
+      characters[entry.key] = (characters[entry.key] ?? 0) + entry.value;
+    }
+    total += slice;
+    if (language != null) {
+      byLanguage[language] = (byLanguage[language] ?? Duration.zero) + slice;
+    }
+  }
+
+  var cursor = 0;
+  for (final span in ordered) {
+    take(cursor, span.start, options.language);
+    take(span.start, span.end, span.language);
+    cursor = span.end;
+  }
+  take(cursor, text.length, options.language);
+
+  return ReadTime(
+    duration: total,
+    counts: TextCounts(words: words, characters: characters),
+    speed: base,
+    byLanguage: byLanguage,
+  );
+}
+
+/// The same, with the Markdown taken out of [markdown] first.
+///
+/// **The spans must index the Markdown**, not the prose underneath it: this is
+/// the form a caller has, and asking them to offset around markup they did not
+/// remove would be asking them to do the removal twice. Stripping happens here
+/// and the spans are carried across with it.
+ReadTime estimateSpannedMarkdownReadTime(
+  String markdown,
+  List<LanguageSpan> spans, {
+  ReadTimeOptions options = const ReadTimeOptions(),
+}) {
+  if (spans.isEmpty) {
+    return estimateMarkdownReadTime(markdown, options: options);
+  }
+  // Prose per span rather than one pass over the document: a span is a range
+  // of the *source*, and stripping the whole thing first would leave every
+  // offset after the first fence pointing somewhere else.
+  final pieces = <LanguageSpan>[];
+  final prose = StringBuffer();
+  var cursor = 0;
+
+  void append(int start, int end, String? language) {
+    if (end <= start) return;
+    final text = markdownToProse(markdown.substring(start, end));
+    if (text.isEmpty) return;
+    final from = prose.length;
+    prose.write(text);
+    if (language != null) {
+      pieces.add(
+        LanguageSpan(start: from, end: prose.length, language: language),
+      );
+    }
+  }
+
+  for (final span in _tidy(spans, markdown.length)) {
+    append(cursor, span.start, null);
+    append(span.start, span.end, span.language);
+    cursor = span.end;
+  }
+  append(cursor, markdown.length, null);
+
+  return estimateSpannedReadTime(prose.toString(), pieces, options: options);
+}
+
+/// Sorted, clamped, de-overlapped, and with the empties dropped.
+List<LanguageSpan> _tidy(List<LanguageSpan> spans, int length) {
+  final sorted = <LanguageSpan>[...spans]
+    ..sort((a, b) => a.start.compareTo(b.start));
+
+  final kept = <LanguageSpan>[];
+  var reached = 0;
+  for (final span in sorted) {
+    final start = span.start < reached ? reached : span.start;
+    final from = start < 0 ? 0 : start;
+    final to = span.end > length ? length : span.end;
+    if (to <= from) continue;
+    kept.add(LanguageSpan(start: from, end: to, language: span.language));
+    reached = to;
+  }
+  return kept;
+}
+
 /// How long [text] takes to read.
 ///
 /// [text] is taken as plain prose. Markdown goes through
-/// [estimateMarkdownReadTime] instead, which strips the markup first.
+/// [estimateMarkdownReadTime] instead, which strips the markup first. Text in
+/// more than one language goes through [estimateSpannedReadTime].
 ReadTime estimateReadTime(
   String text, {
   ReadTimeOptions options = const ReadTimeOptions(),
@@ -134,10 +340,18 @@ ReadTime estimateReadTime(
   if (text.isEmpty) return ReadTime.empty(speed);
 
   final counts = countText(text);
+  final duration = _durationOf(counts, speed, options);
+  final language = options.language;
   return ReadTime(
-    duration: _durationOf(counts, speed, options),
+    duration: duration,
     counts: counts,
     speed: speed,
+    // One entry, or none where the caller named no language — the same rule
+    // the spanned estimate follows, so a caller reading `byLanguage` does not
+    // have to know which function produced the answer.
+    byLanguage: language == null
+        ? const <String, Duration>{}
+        : <String, Duration>{language: duration},
   );
 }
 

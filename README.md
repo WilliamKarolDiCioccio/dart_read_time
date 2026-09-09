@@ -49,6 +49,46 @@ like it — Korean spaces its eojeol — so filing it with Chinese and Japanese
 would roughly triple every Korean estimate. It is the mistake this library is
 most careful about.
 
+## Text in more than one language
+
+Mixed *scripts* are handled above without you doing anything. Mixed
+*languages in the same script* — English quoting a French sentence — need
+someone to say where the French is, and **this package detects nothing**:
+
+```dart
+estimateSpannedReadTime(
+  text,
+  [LanguageSpan(start: 42, end: 96, language: 'fr')],
+  options: const ReadTimeOptions(language: 'en'),
+);
+```
+
+Spans come from wherever you have them — a detector, a `lang=` attribute, an
+author who said so. Baking one detector in would have made it normative, tied
+this package to that detector's platform, and put an `await` in front of a
+synchronous function. `estimateSpannedMarkdownReadTime` is the same thing with
+offsets into the Markdown source.
+
+Handing over no spans is the off switch and costs nothing. Gaps fall to
+`options.language`; overlaps go to whichever span starts earlier; out-of-range
+offsets are clamped rather than thrown at.
+
+**Spans change the rate, never the unit.** What is counted in words and what in
+characters is still decided by the script the runes are in, so a span naming
+the wrong language costs a rate rather than an order of magnitude. That is
+worth knowing before you wire a detector to it: the common ones are documented
+to confuse Chinese with Korean, and here that is the difference between 158 and
+170 words a minute rather than the threefold error it would be if the language
+picked the unit.
+
+The result says what it drew on:
+
+```dart
+estimate.byLanguage;        // {'en': 0:00:22.6, 'fr': 0:00:03.1}
+estimate.dominantLanguage;  // 'en'
+estimate.isMultilingual;    // true
+```
+
 ## Seventeen languages are measured; thirty-seven are reasoned
 
 The measured figures come from cross-linguistic reading studies, including the

@@ -31,10 +31,13 @@ library;
 export 'src/estimate/read_time.dart'
     show
         ContentKind,
+        LanguageSpan,
         ReadTime,
         ReadTimeOptions,
         estimateMarkdownReadTime,
-        estimateReadTime;
+        estimateReadTime,
+        estimateSpannedMarkdownReadTime,
+        estimateSpannedReadTime;
 export 'src/speeds/reading_speed.dart'
     show ReadingPace, ReadingSpeed, ReadingUnit, SpeedEvidence;
 export 'src/speeds/speed_table.dart'

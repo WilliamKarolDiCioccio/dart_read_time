@@ -66,6 +66,42 @@ Japanese entry; the same characters inside Thai prose are a quotation and fall
 to what Han costs in general. Without that field a Han rate would leak into
 every language that happened to carry one.
 
+## Detection is a seam, not a dependency
+
+`estimateSpannedReadTime` takes ranges the caller says are in a given language.
+**Nothing in here detects one**, and the reasons are in order of weight:
+
+A detector is a *platform* dependency. The obvious candidate on pub is
+`flutter_langdetect`, which pulls the Flutter SDK — the one thing the rule at
+the top of this file forbids. It also loads profile data behind an `await`,
+which would make the whole estimate asynchronous to serve a case most callers
+do not have.
+
+And there is no one right detector. Baking one in makes it normative for
+everybody who uses this, when a caller may have far better information than any
+detector: `lang=` in the markup, a per-field language in a CMS, or an author who
+simply said. Taking ranges serves all of those and costs a caller with none of
+them nothing — an empty list is the off switch.
+
+**Spans change the rate and never the unit**, and that is the property that
+makes wiring an imperfect detector to this safe. Which stretches are counted in
+words and which in characters is still decided by `continuousScriptOf`, so a
+span naming the wrong language moves a rate. Concretely: the common detectors
+are documented to confuse Chinese with Korean — the exact pair this package is
+otherwise most careful about — and here that mistake is worth 158 versus 170
+words a minute, not the threefold error it would be if the language picked the
+unit. Both directions have a test.
+
+The one thing a caller must get right is that a boundary falling **inside a
+word** splits it. That is inherent to cutting a string at an offset; a caller
+segmenting by sentence or paragraph never lands there. It has a test too, so
+the behaviour is pinned rather than incidental.
+
+`byLanguage` is keyed by the tag as the caller wrote it, and text covered by
+nothing named is absent rather than filed under a placeholder — the global
+default is not a language. So the values sum to the whole only when something
+named covered all of it.
+
 ## Measured and derived are kept on the data
 
 Seventeen entries come from cross-linguistic reading studies. Thirty-seven are
