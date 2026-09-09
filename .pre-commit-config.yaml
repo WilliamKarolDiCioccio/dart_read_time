@@ -1,0 +1,65 @@
+# Hooks for dart_read_time.
+#
+# Every Dart hook goes through `fvm`. The toolchain is pinned in .fvmrc and
+# `flutter`/`dart` are deliberately not on PATH, so a hook calling a bare
+# `dart` would either fail outright or — worse — quietly use a different SDK
+# than the one the package is pinned to.
+#
+#   pre-commit install          once, per clone
+#   pre-commit run --all-files  to sweep the whole tree
+#
+# `fvm dart`, never `fvm flutter`: this package has no Flutter in it, and a
+# hook that reached for the Flutter tooling would be the first thing to make
+# that stop being true.
+
+default_language_version:
+  python: python3
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: mixed-line-ending
+      - id: check-added-large-files
+        args: ['--maxkb=2048']
+
+  - repo: local
+    hooks:
+      # Checked, never applied. A hook that rewrites a file under you turns one
+      # failed commit into two.
+      - id: dart-format
+        name: dart format
+        entry: fvm dart format --output=none --set-exit-if-changed
+        language: system
+        types: [dart]
+
+      - id: analyze
+        name: analyze
+        entry: fvm dart analyze
+        language: system
+        types: [dart]
+        pass_filenames: false
+
+      - id: test
+        name: test
+        entry: fvm dart test
+        language: system
+        types: [dart]
+        pass_filenames: false
+
+      # The one rule, checked rather than trusted. `tail -n +3` drops FVM's own
+      # "Flutter SDK 3.41.9" banner, which is printed before the dependency
+      # graph and would otherwise make this pass for the wrong reason — it says
+      # nothing about what this package depends on.
+      - id: no-flutter
+        name: no path to package:flutter
+        entry: bash -c '! (fvm dart pub deps --style=list | tail -n +3 | grep -qi flutter)'
+        language: system
+        types: [yaml]
+        pass_filenames: false

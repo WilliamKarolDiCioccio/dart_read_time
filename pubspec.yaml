@@ -1,0 +1,30 @@
+name: dart_read_time
+description: "Estimates how long a piece of text takes to read: 54 languages, and mixed scripts counted a run at a time."
+version: 0.1.0
+repository: https://github.com/WilliamKarolDiCioccio/dart_read_time
+funding:
+  - buymeacoffee.com/Wilielmus
+
+# **Pure Dart, and the constraint is deliberate.** Not one path through this
+# package's dependency graph may reach `package:flutter` — not even
+# `package:flutter/foundation.dart`, which pulls `dart:ui` in on its own
+# through `assertions.dart`. So `@immutable` comes from `package:meta`, and
+# there is no `Locale`, no `TextPainter` and no widget anywhere in here.
+#
+# What that buys is a package a browser, a CLI, a server and a Flutter app can
+# all use. How fast a language is read is a fact about the language rather than
+# about any one application, and nothing here should make it look otherwise.
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  # `@immutable`, which is all this needs from what
+  # `package:flutter/foundation.dart` would have given it.
+  meta: ^1.16.0
+
+dev_dependencies:
+  # `dart test`, not `flutter_test`: there is no Flutter here to test against,
+  # and a package that pulled the Flutter SDK in as a dev dependency would stop
+  # being resolvable by anyone without it.
+  test: ^1.25.0
+  lints: ^6.0.0

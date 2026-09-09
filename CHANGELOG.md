@@ -1,0 +1,46 @@
+# Changelog
+
+## 0.1.0
+
+The first release.
+
+### Estimating a reading time
+
+`estimateReadTime` takes text and answers a `ReadTime` — a `Duration`, the
+counts it was arrived at from, and the `ReadingSpeed` it was priced with.
+`estimateMarkdownReadTime` is the same thing with the markup taken out first.
+
+`ReadTimeOptions` carries the language, one of three `ReadingPace` bands, and a
+content multiplier. The multiplier scales the *speed*, so `ContentKind.technical`
+(0.8) makes the estimate longer rather than shorter.
+
+### Counting by script rather than by tag
+
+`countText` walks the runes and splits the text into runs by script: spaced
+runs are counted in words, space-less ones in characters, and both counts come
+back. That is what lets Japanese prose with an English title in it be priced as
+both, and what stops a whitespace split reporting a paragraph of Chinese as one
+token.
+
+**Hangul is counted by the word**, deliberately. Korean spaces its eojeol;
+filing it with Chinese and Japanese by appearance would roughly triple every
+Korean estimate.
+
+### Fifty-four languages, seventeen of them measured
+
+The measured figures come from cross-linguistic reading studies. The other
+thirty-seven are extrapolations from a measured language — by descent or by
+morphological type — and each names the one it came from and says why.
+`ReadingSpeed.evidence` and `ReadingSpeed.derivedFrom` keep the distinction on
+the data rather than in a comment, and no extrapolation rests on another.
+
+Anything unmapped falls back to 200 words a minute, or 300 characters a minute
+for a space-less script.
+
+### Stripping Markdown
+
+`markdownToProse` removes fenced code and its contents, code spans, HTML tags
+and comments, link and image destinations, link reference definitions,
+autolinks, block markers and emphasis. Link text and image alt text stay:
+somebody wrote them and somebody reads them. Indented code blocks are left
+alone, because telling them from a wrapped list item needs a block parser.

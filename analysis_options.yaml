@@ -1,0 +1,3 @@
+# `lints`, not `flutter_lints`: there is no Flutter in this package and a
+# ruleset that assumes one would be the first dependency to sneak back in.
+include: package:lints/recommended.yaml
