@@ -3,7 +3,7 @@ description: "Estimates how long a piece of text takes to read: 54 languages, an
 version: 0.1.0
 repository: https://github.com/WilliamKarolDiCioccio/dart_read_time
 funding:
-  - buymeacoffee.com/Wilielmus
+  - https://buymeacoffee.com/Wilielmus
 
 # **Pure Dart, and the constraint is deliberate.** Not one path through this
 # package's dependency graph may reach `package:flutter` — not even
