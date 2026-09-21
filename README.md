@@ -166,7 +166,7 @@ item needs a real block parser, and guessing wrong would silently drop prose.
 
 ```yaml
 dependencies:
-  dart_read_time: ^0.1.0
+  dart_read_time: ^0.1.1
 ```
 
 ## Licence

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+- `example/dart_read_time_example.dart`: every entry point on the kinds of
+  text that tell them apart — a plain paragraph, Japanese with an English
+  title in it, English quoting French, a Markdown document — and what a
+  derived rate says about itself. No change to the library.
+
 ## 0.1.0
 
 The first release.
