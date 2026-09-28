@@ -211,13 +211,15 @@ void main() {
   });
 
   group('falling back', () {
-    test('an unmapped spaced language is 200 words a minute', () {
-      final estimate = estimateReadTime(
-        words(200),
-        options: const ReadTimeOptions(language: 'qq-ZZ'),
-      );
-      expect(estimate.speed.evidence, SpeedEvidence.fallback);
-      expect(estimate.duration.inSeconds, 60);
+    test('an unmapped tag and no tag at all both fall back to 200 wpm', () {
+      for (final language in <String?>['qq-ZZ', null]) {
+        final estimate = estimateReadTime(
+          words(200),
+          options: ReadTimeOptions(language: language),
+        );
+        expect(estimate.speed.evidence, SpeedEvidence.fallback);
+        expect(estimate.duration.inSeconds, 60);
+      }
     });
 
     test('an unmapped language writing Han is still counted by character', () {
@@ -234,12 +236,6 @@ void main() {
             'Twenty characters at the stated 300 CPM default. The tag was no '
             'help; the script was.',
       );
-    });
-
-    test('naming no language at all still works', () {
-      final estimate = estimateReadTime(words(200));
-      expect(estimate.speed.evidence, SpeedEvidence.fallback);
-      expect(estimate.duration.inSeconds, 60);
     });
   });
 
