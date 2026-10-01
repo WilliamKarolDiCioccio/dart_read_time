@@ -35,22 +35,22 @@ void main() {
         final speed = entry.value;
         expect(
           speed.slowWpm,
-          lessThan(speed.mediumWpm),
+          lessThan(speed.averageWpm),
           reason: '${entry.key} words',
         );
         expect(
-          speed.mediumWpm,
+          speed.averageWpm,
           lessThan(speed.fastWpm),
           reason: '${entry.key} words',
         );
-        if (speed.mediumCpm != null) {
+        if (speed.averageCpm != null) {
           expect(
             speed.slowCpm!,
-            lessThan(speed.mediumCpm!),
+            lessThan(speed.averageCpm!),
             reason: '${entry.key} characters',
           );
           expect(
-            speed.mediumCpm!,
+            speed.averageCpm!,
             lessThan(speed.fastCpm!),
             reason: '${entry.key} characters',
           );
@@ -97,7 +97,7 @@ void main() {
       for (final entry in entries()) {
         final speed = entry.value;
         expect(
-          speed.mediumCpm != null,
+          speed.averageCpm != null,
           speed.nativeScripts.isNotEmpty,
           reason:
               '${entry.key} has one of a character rate and a native script '
@@ -106,10 +106,10 @@ void main() {
         );
         expect(
           speed.slowCpm == null,
-          speed.mediumCpm == null,
+          speed.averageCpm == null,
           reason: '${entry.key} has a partial character rate',
         );
-        expect(speed.fastCpm == null, speed.mediumCpm == null);
+        expect(speed.fastCpm == null, speed.averageCpm == null);
       }
     });
 
@@ -187,7 +187,7 @@ void main() {
     test('an unknown tag falls back, and says so', () {
       final speed = ReadingSpeeds.of('qq-ZZ');
       expect(speed.evidence, SpeedEvidence.fallback);
-      expect(speed.mediumWpm, kFallbackWordsPerMinute);
+      expect(speed.averageWpm, kFallbackWordsPerMinute);
     });
 
     test('no tag at all is the same as an unknown one', () {
@@ -196,7 +196,7 @@ void main() {
 
     test('the fallback has no character rate of its own', () {
       expect(
-        kFallbackSpeed.mediumCpm,
+        kFallbackSpeed.averageCpm,
         isNull,
         reason:
             'Space-less text is caught by its script rather than by its tag, '
@@ -230,15 +230,15 @@ void main() {
 
     test('Han on its own is the stated global default', () {
       expect(
-        characterRateFor(CountingScript.han, ReadingPace.medium),
+        characterRateFor(CountingScript.han, ReadingPace.average),
         kFallbackCharactersPerMinute,
       );
     });
 
     test('kana is quicker than Han, which is why they are kept apart', () {
       expect(
-        characterRateFor(CountingScript.kana, ReadingPace.medium),
-        greaterThan(characterRateFor(CountingScript.han, ReadingPace.medium)),
+        characterRateFor(CountingScript.kana, ReadingPace.average),
+        greaterThan(characterRateFor(CountingScript.han, ReadingPace.average)),
       );
     });
   });

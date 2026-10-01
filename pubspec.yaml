@@ -1,6 +1,6 @@
 name: dart_read_time
 description: "Estimates how long a piece of text takes to read: 54 languages, and mixed scripts counted a run at a time."
-version: 0.1.1
+version: 1.0.0
 repository: https://github.com/WilliamKarolDiCioccio/dart_read_time
 topics:
   - reading-time

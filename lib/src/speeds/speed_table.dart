@@ -34,7 +34,7 @@ const int kFallbackCharactersPerMinute = 300;
 /// claimed.
 const ReadingSpeed kFallbackSpeed = ReadingSpeed(
   slowWpm: 150,
-  mediumWpm: kFallbackWordsPerMinute,
+  averageWpm: kFallbackWordsPerMinute,
   fastWpm: 250,
   evidence: SpeedEvidence.fallback,
   note:
@@ -67,7 +67,7 @@ int characterRateFor(CountingScript script, ReadingPace pace) {
   if (rates == null) return kFallbackCharactersPerMinute;
   return switch (pace) {
     ReadingPace.slow => rates.$1,
-    ReadingPace.medium => rates.$2,
+    ReadingPace.average => rates.$2,
     ReadingPace.fast => rates.$3,
   };
 }
@@ -81,7 +81,7 @@ int characterRateFor(CountingScript script, ReadingPace pace) {
 const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   'af': ReadingSpeed(
     slowWpm: 155,
-    mediumWpm: 207,
+    averageWpm: 207,
     fastWpm: 265,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'nl',
@@ -91,7 +91,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'ar': ReadingSpeed(
     slowWpm: 100,
-    mediumWpm: 138,
+    averageWpm: 138,
     fastWpm: 175,
     evidence: SpeedEvidence.measured,
     note:
@@ -101,7 +101,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'bal': ReadingSpeed(
     slowWpm: 110,
-    mediumWpm: 150,
+    averageWpm: 150,
     fastWpm: 190,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ar',
@@ -111,7 +111,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'bg': ReadingSpeed(
     slowWpm: 135,
-    mediumWpm: 190,
+    averageWpm: 190,
     fastWpm: 245,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ru',
@@ -121,7 +121,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'brh': ReadingSpeed(
     slowWpm: 105,
-    mediumWpm: 143,
+    averageWpm: 143,
     fastWpm: 180,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ar',
@@ -131,7 +131,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'ca': ReadingSpeed(
     slowWpm: 155,
-    mediumWpm: 205,
+    averageWpm: 205,
     fastWpm: 265,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'es',
@@ -141,7 +141,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'cs': ReadingSpeed(
     slowWpm: 122,
-    mediumWpm: 168,
+    averageWpm: 168,
     fastWpm: 212,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'pl',
@@ -151,7 +151,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'cy': ReadingSpeed(
     slowWpm: 128,
-    mediumWpm: 172,
+    averageWpm: 172,
     fastWpm: 220,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'fr',
@@ -162,7 +162,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'da': ReadingSpeed(
     slowWpm: 145,
-    mediumWpm: 197,
+    averageWpm: 197,
     fastWpm: 255,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'sv',
@@ -172,7 +172,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'de': ReadingSpeed(
     slowWpm: 140,
-    mediumWpm: 179,
+    averageWpm: 179,
     fastWpm: 215,
     evidence: SpeedEvidence.measured,
     note:
@@ -181,7 +181,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'el': ReadingSpeed(
     slowWpm: 130,
-    mediumWpm: 180,
+    averageWpm: 180,
     fastWpm: 232,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ru',
@@ -191,7 +191,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'en': ReadingSpeed(
     slowWpm: 175,
-    mediumWpm: 238,
+    averageWpm: 238,
     fastWpm: 300,
     evidence: SpeedEvidence.measured,
     note:
@@ -200,7 +200,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'es': ReadingSpeed(
     slowWpm: 165,
-    mediumWpm: 218,
+    averageWpm: 218,
     fastWpm: 280,
     evidence: SpeedEvidence.measured,
     note:
@@ -209,7 +209,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'et': ReadingSpeed(
     slowWpm: 128,
-    mediumWpm: 166,
+    averageWpm: 166,
     fastWpm: 205,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'fi',
@@ -219,7 +219,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'eu': ReadingSpeed(
     slowWpm: 122,
-    mediumWpm: 158,
+    averageWpm: 158,
     fastWpm: 197,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'fi',
@@ -229,7 +229,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'fa': ReadingSpeed(
     slowWpm: 115,
-    mediumWpm: 155,
+    averageWpm: 155,
     fastWpm: 198,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ar',
@@ -239,7 +239,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'fi': ReadingSpeed(
     slowWpm: 125,
-    mediumWpm: 161,
+    averageWpm: 161,
     fastWpm: 200,
     evidence: SpeedEvidence.measured,
     note:
@@ -248,7 +248,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'fr': ReadingSpeed(
     slowWpm: 145,
-    mediumWpm: 195,
+    averageWpm: 195,
     fastWpm: 250,
     evidence: SpeedEvidence.measured,
     note:
@@ -257,7 +257,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'gl': ReadingSpeed(
     slowWpm: 133,
-    mediumWpm: 185,
+    averageWpm: 185,
     fastWpm: 238,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'pt',
@@ -267,7 +267,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'he': ReadingSpeed(
     slowWpm: 130,
-    mediumWpm: 187,
+    averageWpm: 187,
     fastWpm: 240,
     evidence: SpeedEvidence.measured,
     note:
@@ -276,7 +276,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'hi': ReadingSpeed(
     slowWpm: 122,
-    mediumWpm: 170,
+    averageWpm: 170,
     fastWpm: 220,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ru',
@@ -286,7 +286,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'hr': ReadingSpeed(
     slowWpm: 125,
-    mediumWpm: 178,
+    averageWpm: 178,
     fastWpm: 228,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'sl',
@@ -296,7 +296,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'hu': ReadingSpeed(
     slowWpm: 120,
-    mediumWpm: 157,
+    averageWpm: 157,
     fastWpm: 195,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'fi',
@@ -306,7 +306,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'hy': ReadingSpeed(
     slowWpm: 125,
-    mediumWpm: 172,
+    averageWpm: 172,
     fastWpm: 222,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ru',
@@ -316,7 +316,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'id': ReadingSpeed(
     slowWpm: 150,
-    mediumWpm: 200,
+    averageWpm: 200,
     fastWpm: 255,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'es',
@@ -326,7 +326,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'is': ReadingSpeed(
     slowWpm: 130,
-    mediumWpm: 178,
+    averageWpm: 178,
     fastWpm: 228,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'sv',
@@ -336,7 +336,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'it': ReadingSpeed(
     slowWpm: 140,
-    mediumWpm: 188,
+    averageWpm: 188,
     fastWpm: 240,
     evidence: SpeedEvidence.measured,
     note:
@@ -345,10 +345,10 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'ja': ReadingSpeed(
     slowWpm: 135,
-    mediumWpm: 193,
+    averageWpm: 193,
     fastWpm: 250,
     slowCpm: 350,
-    mediumCpm: 400,
+    averageCpm: 400,
     fastCpm: 450,
     nativeScripts: {CountingScript.han, CountingScript.kana},
     evidence: SpeedEvidence.measured,
@@ -359,10 +359,10 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'km': ReadingSpeed(
     slowWpm: 150,
-    mediumWpm: kFallbackWordsPerMinute,
+    averageWpm: kFallbackWordsPerMinute,
     fastWpm: 250,
     slowCpm: 180,
-    mediumCpm: 220,
+    averageCpm: 220,
     fastCpm: 270,
     nativeScripts: {CountingScript.khmer},
     evidence: SpeedEvidence.derived,
@@ -376,7 +376,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'ko': ReadingSpeed(
     slowWpm: 125,
-    mediumWpm: 170,
+    averageWpm: 170,
     fastWpm: 218,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'tr',
@@ -387,7 +387,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'la': ReadingSpeed(
     slowWpm: 120,
-    mediumWpm: 162,
+    averageWpm: 162,
     fastWpm: 208,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'it',
@@ -397,7 +397,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'lij': ReadingSpeed(
     slowWpm: 138,
-    mediumWpm: 185,
+    averageWpm: 185,
     fastWpm: 236,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'it',
@@ -405,7 +405,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'lt': ReadingSpeed(
     slowWpm: 118,
-    mediumWpm: 160,
+    averageWpm: 160,
     fastWpm: 205,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'pl',
@@ -415,7 +415,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'lv': ReadingSpeed(
     slowWpm: 120,
-    mediumWpm: 163,
+    averageWpm: 163,
     fastWpm: 207,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'pl',
@@ -425,7 +425,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'mn': ReadingSpeed(
     slowWpm: 118,
-    mediumWpm: 160,
+    averageWpm: 160,
     fastWpm: 207,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'tr',
@@ -435,7 +435,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'ms': ReadingSpeed(
     slowWpm: 150,
-    mediumWpm: 200,
+    averageWpm: 200,
     fastWpm: 255,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'es',
@@ -446,7 +446,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'nb': ReadingSpeed(
     slowWpm: 145,
-    mediumWpm: 198,
+    averageWpm: 198,
     fastWpm: 258,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'sv',
@@ -456,7 +456,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'nl': ReadingSpeed(
     slowWpm: 150,
-    mediumWpm: 202,
+    averageWpm: 202,
     fastWpm: 260,
     evidence: SpeedEvidence.measured,
     note:
@@ -465,7 +465,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'nn': ReadingSpeed(
     slowWpm: 143,
-    mediumWpm: 196,
+    averageWpm: 196,
     fastWpm: 255,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'sv',
@@ -475,7 +475,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'pa': ReadingSpeed(
     slowWpm: 112,
-    mediumWpm: 152,
+    averageWpm: 152,
     fastWpm: 193,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ar',
@@ -485,7 +485,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'pl': ReadingSpeed(
     slowWpm: 120,
-    mediumWpm: 166,
+    averageWpm: 166,
     fastWpm: 210,
     evidence: SpeedEvidence.measured,
     note:
@@ -494,7 +494,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'pt': ReadingSpeed(
     slowWpm: 130,
-    mediumWpm: 181,
+    averageWpm: 181,
     fastWpm: 235,
     evidence: SpeedEvidence.measured,
     note:
@@ -503,7 +503,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'ro': ReadingSpeed(
     slowWpm: 135,
-    mediumWpm: 182,
+    averageWpm: 182,
     fastWpm: 233,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'it',
@@ -513,7 +513,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'ru': ReadingSpeed(
     slowWpm: 130,
-    mediumWpm: 184,
+    averageWpm: 184,
     fastWpm: 240,
     evidence: SpeedEvidence.measured,
     note:
@@ -522,7 +522,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'sk': ReadingSpeed(
     slowWpm: 122,
-    mediumWpm: 168,
+    averageWpm: 168,
     fastWpm: 213,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'pl',
@@ -530,7 +530,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'sl': ReadingSpeed(
     slowWpm: 125,
-    mediumWpm: 180,
+    averageWpm: 180,
     fastWpm: 230,
     evidence: SpeedEvidence.measured,
     note:
@@ -539,7 +539,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'sr': ReadingSpeed(
     slowWpm: 125,
-    mediumWpm: 178,
+    averageWpm: 178,
     fastWpm: 228,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'sl',
@@ -549,7 +549,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'sv': ReadingSpeed(
     slowWpm: 145,
-    mediumWpm: 199,
+    averageWpm: 199,
     fastWpm: 260,
     evidence: SpeedEvidence.measured,
     note:
@@ -558,10 +558,10 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'th': ReadingSpeed(
     slowWpm: 150,
-    mediumWpm: kFallbackWordsPerMinute,
+    averageWpm: kFallbackWordsPerMinute,
     fastWpm: 250,
     slowCpm: 200,
-    mediumCpm: 250,
+    averageCpm: 250,
     fastCpm: 310,
     nativeScripts: {CountingScript.thai},
     evidence: SpeedEvidence.derived,
@@ -574,7 +574,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'tl': ReadingSpeed(
     slowWpm: 148,
-    mediumWpm: 198,
+    averageWpm: 198,
     fastWpm: 253,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'es',
@@ -584,7 +584,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'tr': ReadingSpeed(
     slowWpm: 120,
-    mediumWpm: 166,
+    averageWpm: 166,
     fastWpm: 215,
     evidence: SpeedEvidence.measured,
     note:
@@ -593,7 +593,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'uk': ReadingSpeed(
     slowWpm: 130,
-    mediumWpm: 183,
+    averageWpm: 183,
     fastWpm: 238,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'ru',
@@ -602,7 +602,7 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'vi': ReadingSpeed(
     slowWpm: 215,
-    mediumWpm: 290,
+    averageWpm: 290,
     fastWpm: 370,
     evidence: SpeedEvidence.derived,
     derivedFrom: 'es',
@@ -617,10 +617,10 @@ const Map<String, ReadingSpeed> _speeds = <String, ReadingSpeed>{
   ),
   'zh': ReadingSpeed(
     slowWpm: 120,
-    mediumWpm: 158,
+    averageWpm: 158,
     fastWpm: 200,
     slowCpm: 255,
-    mediumCpm: 300,
+    averageCpm: 300,
     fastCpm: 350,
     nativeScripts: {CountingScript.han},
     evidence: SpeedEvidence.measured,

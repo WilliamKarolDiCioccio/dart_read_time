@@ -9,7 +9,7 @@ import '../text/script_counts.dart';
 ///
 /// Not a quality ranking. The bands come from the spread real studies measure
 /// across a population and a purpose: [slow] is a reader studying the text or
-/// one still acquiring the language, [medium] is the adult average and the
+/// one still acquiring the language, [average] is the adult average and the
 /// only defensible default, [fast] is skimming or light prose already
 /// familiar.
 enum ReadingPace {
@@ -18,7 +18,7 @@ enum ReadingPace {
 
   /// The adult average. The default, and the number everything else is
   /// anchored on.
-  medium,
+  average,
 
   /// Skimming, or light prose read at speed.
   fast,
@@ -55,12 +55,12 @@ enum SpeedEvidence {
 final class ReadingSpeed {
   const ReadingSpeed({
     required this.slowWpm,
-    required this.mediumWpm,
+    required this.averageWpm,
     required this.fastWpm,
     required this.evidence,
     required this.note,
     this.slowCpm,
-    this.mediumCpm,
+    this.averageCpm,
     this.fastCpm,
     this.nativeScripts = const {},
     this.derivedFrom,
@@ -70,7 +70,7 @@ final class ReadingSpeed {
   final int slowWpm;
 
   /// Words per minute, the adult average.
-  final int mediumWpm;
+  final int averageWpm;
 
   /// Words per minute, skimming.
   final int fastWpm;
@@ -82,7 +82,7 @@ final class ReadingSpeed {
   /// Characters per minute at the adult average, or null. **This is the field
   /// that decides whether the language is character-counted at all** — see
   /// [primaryUnit].
-  final int? mediumCpm;
+  final int? averageCpm;
 
   /// Characters per minute, skimming, or null.
   final int? fastCpm;
@@ -111,12 +111,12 @@ final class ReadingSpeed {
   /// Characters exactly when a character rate is present, which in this table
   /// is exactly the languages written without spaces.
   ReadingUnit get primaryUnit =>
-      mediumCpm == null ? ReadingUnit.words : ReadingUnit.characters;
+      averageCpm == null ? ReadingUnit.words : ReadingUnit.characters;
 
   /// Words per minute at [pace].
   int wordsPerMinute(ReadingPace pace) => switch (pace) {
     ReadingPace.slow => slowWpm,
-    ReadingPace.medium => mediumWpm,
+    ReadingPace.average => averageWpm,
     ReadingPace.fast => fastWpm,
   };
 
@@ -124,14 +124,14 @@ final class ReadingSpeed {
   /// character rate of its own.
   int? charactersPerMinute(ReadingPace pace) => switch (pace) {
     ReadingPace.slow => slowCpm,
-    ReadingPace.medium => mediumCpm,
+    ReadingPace.average => averageCpm,
     ReadingPace.fast => fastCpm,
   };
 
   @override
   String toString() =>
-      'ReadingSpeed($mediumWpm wpm'
-      '${mediumCpm == null ? '' : ', $mediumCpm cpm'}, ${evidence.name})';
+      'ReadingSpeed($averageWpm wpm'
+      '${averageCpm == null ? '' : ', $averageCpm cpm'}, ${evidence.name})';
 }
 
 /// The unit a language's text is measured in.

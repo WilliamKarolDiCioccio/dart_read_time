@@ -25,7 +25,7 @@ void main() {
         text,
         options: ReadTimeOptions(
           language: language,
-          pace: pace ?? ReadingPace.medium,
+          pace: pace ?? ReadingPace.average,
         ),
       );
 
@@ -43,7 +43,7 @@ void main() {
             'anchored on, so this one has to be exact.',
       );
       expect(estimate.roundedMinutes, 1);
-      expect(estimate.speed.evidence, SpeedEvidence.measured);
+      expect(estimate.readingSpeed.evidence, SpeedEvidence.measured);
     });
 
     test('a language with longer words takes longer per word', () {
@@ -143,10 +143,10 @@ void main() {
   group('pace and density', () {
     test('skimming is quicker and studying is slower', () {
       final slow = read(words(200), language: 'en', pace: ReadingPace.slow);
-      final medium = read(words(200), language: 'en');
+      final average = read(words(200), language: 'en');
       final fast = read(words(200), language: 'en', pace: ReadingPace.fast);
-      expect(fast.duration, lessThan(medium.duration));
-      expect(medium.duration, lessThan(slow.duration));
+      expect(fast.duration, lessThan(average.duration));
+      expect(average.duration, lessThan(slow.duration));
     });
 
     test('a dense document takes longer, not less', () {
@@ -158,14 +158,14 @@ void main() {
         words(200),
         options: const ReadTimeOptions(
           language: 'en',
-          contentMultiplier: ContentKind.technical,
+          contentMultiplier: ContentMultiplier.technical,
         ),
       );
       final fiction = estimateReadTime(
         words(200),
         options: const ReadTimeOptions(
           language: 'en',
-          contentMultiplier: ContentKind.fiction,
+          contentMultiplier: ContentMultiplier.fiction,
         ),
       );
       expect(
@@ -187,7 +187,7 @@ void main() {
         japanese,
         options: const ReadTimeOptions(
           language: 'ja',
-          contentMultiplier: ContentKind.technical,
+          contentMultiplier: ContentMultiplier.technical,
         ),
       );
       expect(technical.duration, greaterThan(plain.duration));
@@ -217,7 +217,7 @@ void main() {
           words(200),
           options: ReadTimeOptions(language: language),
         );
-        expect(estimate.speed.evidence, SpeedEvidence.fallback);
+        expect(estimate.readingSpeed.evidence, SpeedEvidence.fallback);
         expect(estimate.duration.inSeconds, 60);
       }
     });
@@ -378,8 +378,8 @@ void main() {
       words(10),
       options: const ReadTimeOptions(language: 'da'),
     );
-    expect(estimate.speed.evidence, SpeedEvidence.derived);
-    expect(estimate.speed.derivedFrom, 'sv');
+    expect(estimate.readingSpeed.evidence, SpeedEvidence.derived);
+    expect(estimate.readingSpeed.derivedFrom, 'sv');
   });
 
   test('options copy one field at a time', () {
@@ -387,6 +387,14 @@ void main() {
     final faster = base.copyWith(pace: ReadingPace.fast);
     expect(faster.language, 'en');
     expect(faster.pace, ReadingPace.fast);
-    expect(faster.contentMultiplier, ContentKind.prose);
+    expect(faster.contentMultiplier, ContentMultiplier.prose);
+
+    // Null means keep, so taking the language away needs its own word.
+    expect(base.copyWith(language: null).language, 'en');
+    expect(base.copyWith(clearLanguage: true).language, isNull);
+    expect(
+      () => base.copyWith(language: 'fr', clearLanguage: true),
+      throwsArgumentError,
+    );
   });
 }
