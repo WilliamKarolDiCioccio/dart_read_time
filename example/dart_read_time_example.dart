@@ -59,7 +59,7 @@ dart pub add dart_read_time
     document,
     options: const ReadTimeOptions(
       language: 'en',
-      contentMultiplier: ContentKind.technical,
+      contentMultiplier: ContentMultiplier.technical,
     ),
   );
   print('Markdown: ${markdown.words} words, ${_seconds(markdown)}');

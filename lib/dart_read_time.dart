@@ -30,7 +30,7 @@ library;
 
 export 'src/estimate/read_time.dart'
     show
-        ContentKind,
+        ContentMultiplier,
         LanguageSpan,
         ReadTime,
         ReadTimeOptions,

@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.0.0
+
+The API is now stable. The algorithm and every figure in the table are
+unchanged, so an estimate made with 0.1.1 is the same estimate today. Four
+breaking renames, each to say more exactly what was already there:
+
+- **`ContentKind` is now `ContentMultiplier`.** It never was a kind: it holds
+  three `double` constants for `ReadTimeOptions.contentMultiplier`, a field
+  that takes any positive `double`. The old name read like an enum and led
+  people to expect one.
+- **`ReadingPace.medium` is now `ReadingPace.average`**, which is what it
+  always meant: the adult average. `ReadingSpeed.mediumWpm` and `mediumCpm`
+  follow as `averageWpm` and `averageCpm`. A caller that stores a pace by
+  `name` should still read a stored `'medium'` as `average`.
+- **`ReadTime.speed` is now `ReadTime.readingSpeed`**, the name of its type.
+- **`ReadTimeOptions.copyWith` can clear the language** with
+  `clearLanguage: true`. A null `language` still means *keep*. Passing both is
+  an `ArgumentError`.
+
+Migrating from 0.1.x is a find-and-replace:
+
+| 0.1.x | 1.0.0 |
+| --- | --- |
+| `ContentKind.technical` | `ContentMultiplier.technical` |
+| `ReadingPace.medium` | `ReadingPace.average` |
+| `speed.mediumWpm`, `speed.mediumCpm` | `speed.averageWpm`, `speed.averageCpm` |
+| `estimate.speed` | `estimate.readingSpeed` |
+
 ## 0.1.1
 
 - `example/dart_read_time_example.dart`: every entry point on the kinds of

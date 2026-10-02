@@ -14,8 +14,8 @@ import '../text/script_counts.dart';
 /// *longer*: dense writing is read more slowly, not more quickly. The field
 /// that takes them is an ordinary `double`, so a caller with its own figure
 /// does not have to be in this list.
-abstract final class ContentKind {
-  const ContentKind._();
+abstract final class ContentMultiplier {
+  const ContentMultiplier._();
 
   /// Ordinary writing. The default, and the multiplier that changes nothing.
   static const double prose = 1.0;
@@ -32,8 +32,8 @@ abstract final class ContentKind {
 final class ReadTimeOptions {
   const ReadTimeOptions({
     this.language,
-    this.pace = ReadingPace.medium,
-    this.contentMultiplier = ContentKind.prose,
+    this.pace = ReadingPace.average,
+    this.contentMultiplier = ContentMultiplier.prose,
   }) : assert(contentMultiplier > 0, 'contentMultiplier must be positive');
 
   /// Any BCP 47-ish tag — `en`, `pt-BR`, `zh-Hans-CN`, `en_US.UTF-8`.
@@ -44,21 +44,32 @@ final class ReadTimeOptions {
   /// it is written in either way, so a wrong tag costs less than it looks.
   final String? language;
 
-  /// Which of the three bands to read at. [ReadingPace.medium] by default,
+  /// Which of the three bands to read at. [ReadingPace.average] by default,
   /// because it is the adult average and the only defensible guess.
   final ReadingPace pace;
 
   /// How dense the writing is, as a multiplier on the speed. See
-  /// [ContentKind].
+  /// [ContentMultiplier].
   final double contentMultiplier;
 
   /// This, with whatever is named replaced.
+  ///
+  /// A null argument means *keep*, so a language cannot be taken away by
+  /// passing null for it — [clearLanguage] is how that is said, and it is a
+  /// flag rather than a sentinel so the parameter keeps its type.
   ReadTimeOptions copyWith({
     String? language,
+    bool clearLanguage = false,
     ReadingPace? pace,
     double? contentMultiplier,
   }) => ReadTimeOptions(
-    language: language ?? this.language,
+    language: clearLanguage
+        ? (language == null
+              ? null
+              : throw ArgumentError(
+                  'Pass a language or clearLanguage, not both.',
+                ))
+        : language ?? this.language,
     pace: pace ?? this.pace,
     contentMultiplier: contentMultiplier ?? this.contentMultiplier,
   );
@@ -67,7 +78,7 @@ final class ReadTimeOptions {
 /// How long a piece of text takes to read, and how that was arrived at.
 ///
 /// The counts and the speed are kept rather than thrown away, because an
-/// estimate nobody can check is one nobody should trust: [speed] says whether
+/// estimate nobody can check is one nobody should trust: [readingSpeed] says whether
 /// the language was measured, derived or defaulted, and [counts] says what was
 /// actually found in the text.
 @immutable
@@ -75,12 +86,12 @@ final class ReadTime {
   const ReadTime({
     required this.duration,
     required this.counts,
-    required this.speed,
+    required this.readingSpeed,
     this.byLanguage = const <String, Duration>{},
   });
 
   /// Nothing to read, which is what empty text comes to.
-  ReadTime.empty(this.speed)
+  ReadTime.empty(this.readingSpeed)
     : duration = Duration.zero,
       counts = const TextCounts.empty(),
       byLanguage = const <String, Duration>{};
@@ -97,7 +108,7 @@ final class ReadTime {
   ///
   /// With spans, stretches of the text may have been priced by other entries
   /// than this one; [byLanguage] is what says so.
-  final ReadingSpeed speed;
+  final ReadingSpeed readingSpeed;
 
   /// How much of [duration] each **named** language accounted for, keyed by
   /// the tag as the caller wrote it.
@@ -153,7 +164,7 @@ final class ReadTime {
   @override
   String toString() =>
       'ReadTime(${duration.inSeconds}s, words: $words, '
-      'characters: $characters, ${speed.evidence.name})';
+      'characters: $characters, ${readingSpeed.evidence.name})';
 }
 
 /// A stretch of text known to be in one language.
@@ -260,7 +271,7 @@ ReadTime estimateSpannedReadTime(
   return ReadTime(
     duration: total,
     counts: TextCounts(words: words, characters: characters),
-    speed: base,
+    readingSpeed: base,
     byLanguage: byLanguage,
   );
 }
@@ -345,7 +356,7 @@ ReadTime estimateReadTime(
   return ReadTime(
     duration: duration,
     counts: counts,
-    speed: speed,
+    readingSpeed: speed,
     // One entry, or none where the caller named no language — the same rule
     // the spanned estimate follows, so a caller reading `byLanguage` does not
     // have to know which function produced the answer.

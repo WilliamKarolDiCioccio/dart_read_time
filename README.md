@@ -18,7 +18,7 @@ final estimate = estimateReadTime(
 print('${estimate.roundedMinutes} min read');   // 3 min read
 print(estimate.words);                          // 12
 print(estimate.characters);                     // 840
-print(estimate.speed.evidence);                 // SpeedEvidence.measured
+print(estimate.readingSpeed.evidence);          // SpeedEvidence.measured
 ```
 
 ## The script decides the unit, not the tag
@@ -131,17 +131,21 @@ measure the page, not the reader.
 ```dart
 const ReadTimeOptions(
   language: 'de',
-  pace: ReadingPace.fast,                     // slow | medium | fast
-  contentMultiplier: ContentKind.technical,   // 0.8
+  pace: ReadingPace.fast,                          // slow | average | fast
+  contentMultiplier: ContentMultiplier.technical,  // 0.8
 )
 ```
 
-`ReadingPace.medium` is the adult average and the default. `slow` is a reader
+`ReadingPace.average` is the adult average and the default. `slow` is a reader
 studying the text or still acquiring the language; `fast` is skimming.
 
-The multiplier scales the **speed**, so `ContentKind.technical` (0.8) makes the
-estimate *longer* — dense writing is read more slowly. `ContentKind.fiction` is
-1.1, and the field is an ordinary `double` if you have measured your own.
+The multiplier scales the **speed**, so `ContentMultiplier.technical` (0.8)
+makes the estimate *longer* — dense writing is read more slowly.
+`ContentMultiplier.fiction` is 1.1, and the field is an ordinary `double` if you
+have measured your own.
+
+`copyWith` treats a null argument as *keep*; `copyWith(clearLanguage: true)` is
+how a language is taken away.
 
 ## Markdown
 
@@ -166,7 +170,7 @@ item needs a real block parser, and guessing wrong would silently drop prose.
 
 ```yaml
 dependencies:
-  dart_read_time: ^0.1.1
+  dart_read_time: ^1.0.0
 ```
 
 ## Licence
