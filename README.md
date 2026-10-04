@@ -89,6 +89,19 @@ estimate.dominantLanguage;  // 'en'
 estimate.isMultilingual;    // true
 ```
 
+## Used in production
+
+dart_read_time puts a reading time under every passage in [Ripple
+Effect](https://ripplefx.app), a desktop application for writing interactive
+stories as graphs, built with Flutter and Rust for Linux, macOS and Windows. A
+passage there is a Markdown file per language, and the bar beneath the editor
+shows the counts, the three pace bands and the estimate, recomputed when the
+author stops typing. The app does what this package deliberately leaves to its
+caller: it removes its own embedded Python snippets before the Markdown goes in,
+and supplies the language spans from a detector, so a passage mixing Japanese
+and English is counted a run at a time. The reader's pace is a setting, kept as
+a `ReadingPace`.
+
 ## Seventeen languages are measured; thirty-seven are reasoned
 
 The measured figures come from cross-linguistic reading studies, including the
